@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEODRA SINT - The Dealer's Game</title>
+    <!-- Tailwind CSS CDN for utility-first styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter for consistent typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom CSS for font-family and responsive font sizes using clamp */
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden; /* Prevent horizontal scroll on smaller screens */
+        }
+
+        /* Responsive font sizes using clamp for main titles */
+        .text-h1-responsive {
+            font-size: clamp(1.6rem, 5vw, 2.2rem); /* Adjusted for even smaller, more elegant feel */
+        }
+        .text-h2-responsive {
+            font-size: clamp(1rem, 2.8vw, 1.4rem); /* Adjusted for even smaller, more elegant feel */
+        }
+        .text-h3-responsive {
+            font-size: clamp(0.8rem, 2.5vw, 1.8rem); /* Adjusted for even smaller, more elegant feel */
+        }
+        .text-h4-responsive {
+            font-size: clamp(0.75rem, 1.6vw, 1rem); /* Adjusted for even smaller, more elegant feel */
+        }
+        .text-p-responsive {
+            font-size: clamp(0.7rem, 1.4vw, 0.85rem); /* Adjusted for even smaller, more elegant feel */
+        }
+
+        /* Hamburger menu bar animation */
+        .menu-icon.open .bar:nth-child(1) {
+            transform: translateY(7px) rotate(45deg); /* Adjusted for smaller icon */
+        }
+        .menu-icon.open .bar:nth-child(2) {
+            opacity: 0;
+        }
+        .menu-icon.open .bar:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg); /* Adjusted for smaller icon */
+        }
+
+        /* Mobile navigation overlay */
+        .mobile-nav-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .mobile-nav-overlay.open {
+            transform: translateX(0);
+        }
+
+        .mobile-nav-overlay ul {
+            list-style: none;
+            padding: 0;
+            text-align: center;
+        }
+
+        .mobile-nav-overlay ul li {
+            margin: 12px 0; /* Further reduced margin */
+        }
+
+        .mobile-nav-overlay ul li a {
+            color: white;
+            font-size: 1.4rem; /* Further reduced font size */
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* Style for the search input */
+        /* Removed .search-container specific styles as it's no longer a separate block */
+        .search-input {
+            width: 120px; /* Adjust width as needed for inline header */
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 0.75rem; /* text-xs */
+            color: #333;
+            transition: width 0.3s ease-in-out;
+            background-color: #f0f0f0; /* Light background for visibility in dark header */
+        }
+
+        .search-input:focus {
+            width: 180px; /* Expand on focus */
+            outline: none;
+            border-color: #000;
+            box-shadow: 0 0 0 1px #000;
+        }
+
+        .search-button {
+            background-color: #333;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .search-button:hover {
+            background-color: #555;
+        }
+
+        /* Message Modal specific styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+            max-width: 90%;
+            width: 450px;
+            position: relative;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .modal-overlay.open .modal-content {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background-color: #000000; /* Black */
+            color: #FFFFFF; /* White */
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: 600; /* Semi-bold */
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+        }
+        .btn-primary:hover {
+            background-color: #336699; /* Corporate blue on hover */
+        }
+    </style>
+</head>
+<body class="bg-white">
+
+    <!-- Message Modal -->
+    <div id="messageModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-h3-responsive font-semibold text-gray-800">Pesan</h3>
+                <button onclick="closeMessageModal()" class="text-gray-500 hover:text-gray-700 text-2xl font-bold">&times;</button>
+            </div>
+            <div id="messageModalContent" class="text-p-responsive text-center text-gray-700 space-y-2 mb-6">
+                <!-- Message will be inserted here by JavaScript -->
+            </div>
+            <div class="flex justify-center">
+                <button onclick="closeMessageModal()" class="btn-primary px-8">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Navigation Overlay (Hidden by default) -->
+    <div id="mobile-nav-overlay" class="mobile-nav-overlay md:hidden">
+        <div class="absolute top-4 right-4 cursor-pointer text-white text-xl" onclick="toggleMobileMenu()">
+            &times;
+        </div>
+        <div class="flex items-center mb-4">
+            <input type="text" id="mobile-search-input" placeholder="Cari halaman..." class="search-input mr-2">
+            <button onclick="performSearch('mobile-search-input')" class="search-button">Cari</button>
+        </div>
+        <ul>
+            <li><a href="index.html" class="text-white text-xs font-normal hover:text-gray-300 transition-colors duration-200" onclick="toggleMobileMenu()">Home</a></li>
+            <li><a href="about_new.html" class="text-white text-xs font-normal hover:text-gray-300 transition-colors duration-200" onclick="toggleMobileMenu()">About</a></li>
+            <li><a href="services.html" class="text-white text-xs font-normal hover:text-gray-300 transition-colors duration-200" onclick="toggleMobileMenu()">Services</a></li>
+            <li><a href="contact.html" class="text-white text-xs font-normal hover:text-gray-300 transition-colors duration-200" onclick="toggleMobileMenu()">Contact</a></li>
+        </ul>
+    </div>
+
+    <!-- Header Section -->
+    <header class="bg-black h-14 flex items-center sticky top-0 z-50 rounded-b-sm w-full">
+        <div class="container mx-auto flex justify-between items-center px-3 sm:px-5 lg:px-6 w-full">
+            <div class="text-white text-sm font-light tracking-wide">LEODRA SINT</div>
+            <!-- Hamburger Menu Icon for Mobile -->
+            <div class="md:hidden w-6 h-6 flex flex-col justify-around cursor-pointer p-1 rounded-sm transition-all duration-300 ease-in-out" onclick="toggleMobileMenu()">
+                <div class="bar w-full h-0.5 bg-white rounded-full transition-all duration-300 ease-in-out"></div>
+                <div class="bar w-full h-0.5 bg-white rounded-full transition-all duration-300 ease-in-out"></div>
+                <div class="bar w-full h-0.5 bg-white rounded-full transition-all duration-300 ease-in-out"></div>
+            </div>
+            <!-- Desktop Navigation Links -->
+            <nav class="hidden md:flex items-center space-x-4">
+                <div class="flex items-center space-x-2">
+                    <input type="text" id="desktop-search-input" placeholder="Cari halaman..." class="search-input">
+                    <button onclick="performSearch('desktop-search-input')" class="search-button">Cari</button>
+                </div>
+                <ul class="flex space-x-4">
+                    <li><a href="index.html" class="text-white text-xs font-normal hover:text-gray-300 transition-colors duration-200">Home</a></li>
+                    <li><a href="about_new.html" class="text-white text-xs font-normal hover:text-gray-300 transition-colors duration-200">About</a></li>
+                    <li><a href="services.html" class="text-white text-xs font-normal hover:text-gray-300 transition-colors duration-200">Services</a></li>
+                    <li><a href="contact.html" class="text-white text-xs font-normal hover:text-gray-300 transition-colors duration-200">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative bg-white py-5 md:py-10 overflow-hidden flex-grow flex flex-col justify-center items-center">
+        <div class="container mx-auto flex flex-col-reverse md:flex-row items-center justify-center md:justify-between px-3 sm:px-5 lg:px-6 max-w-4xl">
+            <!-- Hero Text Content -->
+            <div class="w-full md:w-1/2 lg:w-2/5 text-center md:text-left mt-4 md:mt-0">
+                <h1 class="text-black text-h1-responsive font-extralight leading-tight mb-1.5">The Dealer's Game.</h1>
+                <p class="text-black text-p-responsive font-extralight mb-4">Fucking Money</p>
+            </div>
+            <!-- Hero Image -->
+            <div class="w-full md:w-1/2 lg:w-3/5 flex justify-center md:justify-end">
+                <img class="w-full max-w-[18rem] md:max-w-[22rem] lg:max-w-[26rem] h-auto rounded-sm shadow-sm" src="https://images.pexels.com/photos/15650536/pexels-photo-15650536/free-photo-of-man-with-octopus-ring-with-cards.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="The Dealer's Game">
+            </div>
+        </div>
+    </section>
+
+    <!-- Risk Management Banner -->
+    <section class="bg-gray-200 bg-opacity-95 py-5 md:py-8 mt-4 md:mt-8 rounded-sm shadow-inner w-full">
+        <div class="container mx-auto px-3 sm:px-5 lg:px-6 max-w-4xl">
+            <h2 class="text-black text-h4-responsive font-light text-center">Calculating the Calmness of Risk Management</h2>
+        </div>
+    </section>
+
+    <!-- JPMorgan Chase Section -->
+    <section class="py-8 md:py-14 w-full">
+        <div class="container mx-auto flex flex-col md:flex-row items-center justify-center md:justify-between gap-4 md:gap-8 px-3 sm:px-5 lg:px-6 max-w-4xl">
+            <!-- Text Content -->
+            <div class="w-full md:w-1/2 lg:w-2/5 text-center md:text-left">
+                <h3 class="text-black text-h3-responsive font-extralight leading-snug mb-2.5">Only big banks know where the market is going, we small traders just have to follow or die if we fight.</h3>
+                <p class="text-black text-p-responsive font-extralight leading-relaxed">JPMorgan Chase & Co. adalah sebuah perusahaan induk jasa keuangan dan bank investasi multinasional asal Amerika yang berkantor pusat di New York City. Mereka adalah salah satu dari "empat besar" bank di Amerika Serikat dan merupakan salah satu bank terbesar di dunia berdasarkan kapitalisasi pasar. JPMorgan Chase menyediakan berbagai layanan keuangan, termasuk perbankan investasi, manajemen aset, perbankan komersial, dan perbankan ritel.</p>
+            </div>
+            <!-- Image -->
+            <div class="w-full md:w-1/2 lg:w-3/5 flex justify-center md:justify-end">
+                <img class="w-full max-w-[18rem] md:max-w-[22rem] lg:max-w-[26rem] h-auto rounded-sm shadow-sm" src="https://images.pexels.com/photos/2350541/pexels-photo-2350541.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="JPMorgan Chase building">
+            </div>
+        </div>
+    </section>
+
+    <!-- Caesars Palace Section -->
+    <section class="py-8 md:py-14 bg-gray-50 w-full">
+        <div class="container mx-auto flex flex-col md:flex-row-reverse items-center justify-center md:justify-between gap-4 md:gap-8 px-3 sm:px-5 lg:px-6 max-w-4xl">
+            <!-- Text Content -->
+            <div class="w-full md:w-1/2 lg:w-2/5 text-center md:text-right">
+                <h3 class="text-black text-h3-responsive font-extralight leading-snug mb-2.5">No bookie wants you to win, so cheat the system because it was designed to cheat from the start.</h3>
+                <p class="text-black text-p-responsive font-extralight leading-relaxed">Caesars Palace adalah sebuah resor kasino mewah yang terkenal di Las Vegas Strip, terkenal dengan arsitektur bergaya Romawi klasik, hiburan kelas dunia, dan berbagai fasilitas permainan dan perbelanjaan. Resor ini menawarkan pengalaman perjudian yang lengkap, mulai dari berbagai pilihan permainan meja dan slot, hingga arena pacuan kuda dan sportsbook yang besar. Selain itu, Caesars Palace juga memiliki The Forum Shops, sebuah destinasi belanja mewah dengan berbagai toko, restoran, dan tempat hiburan.</p>
+            </div>
+            <!-- Image -->
+            <div class="w-full md:w-1/2 lg:w-3/5 flex justify-center md:justify-start">
+                <img class="w-full max-w-[18rem] md:max-w-[22rem] lg:max-w-[26rem] h-auto rounded-sm shadow-sm" src="https://images.pexels.com/photos/32760136/pexels-photo-32760136/free-photo-of-caesars-palace-illuminated-at-night.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Caesars Palace">
+            </div>
+        </div>
+    </section>
+
+    <!-- Mandalay Bay Overlay Section -->
+    <section class="relative w-full h-64 md:h-[350px] bg-cover bg-center flex items-center justify-center text-white text-center rounded-sm shadow-md" style="background-image: url('https://images.pexels.com/photos/27956672/pexels-photo-27956672/free-photo-of-the-las-vegas-strip-is-seen-from-the-top-of-a-building.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'); margin-top: 2rem;">
+        <!-- Overlay -->
+        <div class="absolute inset-0 bg-black bg-opacity-65 flex items-center justify-center rounded-sm">
+            <div class="container mx-auto px-3 sm:px-5 lg:px-6 max-w-lg">
+                <h2 class="text-h2-responsive font-normal mb-2.5">Mandalay Bay Resort and Casino</h2>
+                <p class="text-p-responsive font-light leading-relaxed">Mandalay Bay Resort and Casino adalah sebuah <a href="#" class="underline hover:text-gray-300 transition-colors duration-200">kasino</a> <a href="#" class="underline hover:text-gray-300 transition-colors duration-200">hotel</a> <a href="#" class="underline hover:text-gray-300 transition-colors duration-200">mewah</a> bertingkat 39 di <a href="#" class="underline hover:text-gray-300 transition-colors duration-200">Las Vegas Strip</a> di <a href="#" class="underline hover:text-gray-300 transition-colors duration-200">Las Vegas</a>. Dimiliki oleh <a href="#" class="underline hover:text-gray-300 transition-colors duration-200">MGM Mirage</a>. Lima tingkat teratas (35-39) bangunan hotel utama digunakan oleh <a href="#" class="underline hover:text-gray-300 transition-colors duration-200">Four Seasons Hotel Las Vegas</a>.<a href="#" class="underline hover:text-gray-300 transition-colors duration-200">[1]</a> Terhubung oleh <a href="#" class="underline hover:text-gray-300 transition-colors duration-200">Mandalay Bay Tram</a> ke properti tetangganya, <a href="#" class="underline hover:text-gray-300 transition-colors duration-200">Excalibur</a> dan <a href="#" class="underline hover:text-gray-300 transition-colors duration-200">Luxor</a>.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section with Detailed Explanation -->
+    <footer class="bg-black py-8 md:py-14 mt-8 rounded-t-sm w-full">
+        <div class="container mx-auto px-3 sm:px-5 lg:px-6 max-w-4xl">
+            <h3 class="text-white text-h2-responsive font-semibold text-center mb-6">Think like a dealer, not like a player.</h3>
+            <div class="bg-white text-black p-3 md:p-6 rounded-sm shadow-md max-w-screen-md mx-auto">
+                <p class="text-black text-p-responsive font-medium mb-1.5"><strong>Bagaimana Kasino Vegas Membuat Pemain Rugi & Mirip dengan Broker Curang</strong></p>
+                <p class="text-black text-p-responsive font-extralight leading-relaxed mb-1.5">Baik kasino di Las Vegas maupun beberapa broker "nakal" memiliki strategi tersembunyi untuk memastikan keuntungan mereka, seringkali dengan mengorbankan pemain atau trader yang menguntungkan. Meskipun metode mereka berbeda, prinsip dasarnya sama: memanipulasi probabilitas dan informasi untuk keuntungan mereka.</p>
+                <p class="text-black text-p-responsive font-medium mb-1.5"><strong>Alur Kasino Vegas Membuat Pemain Rugi</strong></p>
+                <p class="text-black text-p-responsive font-extralight leading-relaxed mb-1.5">Kasino tidak perlu "curang" secara terang-terangan untuk menang; model bisnis mereka dibangun di atas keunggulan statistik yang disebut "house edge". Ini adalah persentase keuntungan jangka panjang yang dimiliki kasino atas pemain. Berikut adalah alurnya:</p>
+                <p class="text-black text-p-responsive font-extralight leading-relaxed mb-1.5"><strong>Matematika yang Tidak Menguntungkan Pemain (House Edge):</strong> Setiap permainan kasino dirancang agar kasino selalu memiliki sedikit keuntungan matematis dalam jangka panjang. Misalnya, di rolet, ada angka 0 (dan kadang 00), yang berarti peluang Anda untuk memenangkan taruhan merah/hitam sedikit kurang dari 50%. Meskipun Anda mungkin menang beberapa putaran, secara statistik, kasino akan selalu di atas angin seiring waktu.</p>
+                <p class="text-black text-p-responsive font-extralight leading-relaxed mb-1.5"><strong>Variasi dan Keberuntungan Jangka Pendek:</strong> Kasino mengandalkan fakta bahwa dalam jangka pendek, keberuntungan bisa berpihak pada pemain. Ini menciptakan ilusi bahwa pemain bisa menang besar, mendorong mereka untuk terus bermain. Kemenangan sesekali ini memicu dopamin dan membuat pemain merasa "beruntung," mendorong mereka untuk terus bertaruh.</p>
+                <p class="text-black text-p-responsive font-extralight leading-relaxed mb-1.5"><strong>Psikologi dan Lingkungan yang Memikat:</strong><br/>Desain Tanpa Jendela dan Jam: Kasino dirancang untuk membuat pemain lupa waktu, mendorong mereka untuk bermain lebih lama.<br/>Atmosfer Glamor dan Hiburan: Suasana yang mewah, musik, dan minuman gratis menciptakan lingkungan yang nyaman dan mendorong pengeluaran.<br/>Kompensasi dan Hadiah (Comp): Kasino memberikan hadiah kecil (makanan gratis, kamar murah) kepada pemain yang kalah dalam jumlah besar atau bermain untuk waktu yang lama, membuat mereka merasa dihargai dan mendorong kunjungan kembali.</p>
+                <p class="text-black text-p-responsive font-extralight leading-relaxed mb-1.5"><strong>Kontrol Informasi dan Aturan Main:</strong> Kasino sepenuhnya mengontrol aturan main, pembayaran, dan informasi yang diberikan kepada pemain. Pemain seringkali tidak menyadari house edge yang sebenarnya atau bagaimana probabilitas bekerja melawan mereka.</p>
+                <p class="text-black text-p-responsive font-extralight leading-relaxed mb-1.5"><strong>Pengelolaan Keuangan Pemain:</strong> Kasino mendorong pemain untuk mengambil lebih banyak uang tunai, menyediakan ATM di lokasi, dan menawarkan fasilitas kredit, semuanya dirancang untuk membuat pemain terus berjudi bahkan setelah mereka kehabisan uang tunai yang mereka bawa.</p>
+                <p class="text-black text-p-responsive font-medium mb-1.5"><strong>Koneksi dengan Broker Curang yang Mencurangi Trader Profitabel</strong><br/>Meskipun ranahnya berbeda, modus operasi broker nakal yang mencurangi trader profitabel memiliki kemiripan filosofis dengan cara kasino beroperasi. Perbedaannya adalah broker tersebut melakukan tindakan yang lebih eksplisit dan seringkali ilegal.</p>
+                <p class="text-black text-p-responsive font-extralight leading-relaxed mb-1.5"><strong>Manipulasi Data dan Eksekusi (House Edge Tersembunyi):</strong><br/>Slippage yang Tidak Adil: Broker sengaja menerapkan slippage negatif yang besar pada pesanan trader yang profitabel, atau bahkan pada semua pesanan. Ini berarti harga eksekusi jauh lebih buruk dari harga yang diharapkan trader, mengikis keuntungan.<br/>Requotes dan Penolakan Pesanan: Pesanan trader yang profitabel, terutama pada saat volatilitas tinggi, seringkali ditolak atau di-requote dengan harga yang kurang menguntungkan. Ini mengganggu strategi trading dan menyebabkan frustrasi.<br/>Pemblokiran Penarikan Dana: Ini adalah bentuk kecurangan yang paling ekstrem. Ketika trader berhasil mengumpulkan keuntungan yang signifikan, broker membuat berbagai alasan (masalah verifikasi, masalah sistem) untuk menunda atau menolak penarikan dana.</p>
+                <p class="text-black text-p-responsive font-extralight leading-relaxed mb-1.5"><strong>Intervensi pada Order Flow (Memprediksi Gerakan Pemain):</strong><br/>Dealing Desk (DD) vs. Non-Dealing Desk (NDD): Broker DD seringkali mengambil posisi berlawanan dengan trader mereka. Jika seorang trader sangat profitabel, broker DD mungkin akan menempatkan "stop-loss hunting" (memicu stop-loss trader secara artifisial) atau menahan harga yang menguntungkan.<br/>Manipulasi Harga: Broker dapat memanipulasi feed harga mereka sendiri, terutama saat ada berita penting, untuk memicu stop-loss atau menunda take-profit trader.</p>
+                <p class="text-black text-p-responsive font-extralight leading-relaxed mb-1.5"><strong>Psikologi dan Lingkungan yang Menjebak:</strong><br/>Bonus dan Promosi Palsu: Banyak broker nakal menawarkan bonus deposit yang sangat besar, tetapi dengan syarat dan ketentuan penarikan yang hampir mustahil untuk dipenuhi. Ini mengunci dana trader dan mendorong mereka untuk terus trading.<br/>Edukasi yang Menyesatkan: Beberapa broker menyediakan "edukasi" yang pada dasarnya mendorong gaya trading yang tidak sehat atau terlalu agresif, yang pada akhirnya menguntungkan broker karena trader akan lebih sering kalah.</p>
+                <p class="text-black text-p-responsive font-extralight leading-relaxed mb-1.5"><strong>Kurangnya Transparansi dan Regulasi yang Lemah:</strong> Broker nakal sering beroperasi di yurisdiksi dengan regulasi yang longgar atau sama sekali tanpa regulasi. Ini memungkinkan mereka untuk melakukan praktik tidak etis tanpa takut dihukum. Mereka tidak memberikan laporan transparan tentang eksekusi order atau aliran dana.</p>
+                <p class="text-black text-p-responsive font-extralight leading-relaxed mb-1.5"><strong>Memanfaatkan Emosi Trader:</strong> Sama seperti kasino, broker nakal memanfaatkan emosi seperti keserakahan dan ketakutan. Mereka tahu bahwa trader yang emosional cenderung membuat keputusan impulsif yang menguntungkan broker.</p>
+                <p class="text-black text-p-responsive font-extralight leading-relaxed">Secara ringkas, baik kasino maupun broker curang bertujuan untuk mendapatkan keuntungan jangka panjang. Kasino melakukannya melalui keunggulan matematis yang inheren dalam permainan mereka dan manipulasi lingkungan psikologis. Broker curang, di sisi lain, secara aktif memanipulasi kondisi trading, data, dan terkadang bahkan menahan dana untuk memastikan mereka "menang" melawan trader yang menguntungkan. Kedua entitas ini mengandalkan fakta bahwa mayoritas "pemain" akan kalah dalam jangka panjang, entah karena matematika atau karena manipulasi sistem.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // JavaScript for mobile menu toggle
+        function toggleMobileMenu() {
+            const mobileNavOverlay = document.getElementById('mobile-nav-overlay');
+            mobileNavOverlay.classList.toggle('open');
+            // Optional: Add/remove overflow-hidden to body to prevent scrolling when menu is open
+            document.body.classList.toggle('overflow-hidden');
+        }
+
+        // Function to open the custom message modal
+        function openMessageModal(message) {
+            const messageModal = document.getElementById('messageModal');
+            const messageModalContent = document.getElementById('messageModalContent');
+            messageModalContent.innerHTML = `<p>${message}</p>`;
+            messageModal.classList.add('open');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        // Function to close the custom message modal
+        function closeMessageModal() {
+            const messageModal = document.getElementById('messageModal');
+            messageModal.classList.remove('open');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        // Function to handle search navigation
+        function performSearch(inputId) {
+            const searchInput = document.getElementById(inputId);
+            const query = searchInput.value.trim().toLowerCase();
+
+            switch (query) {
+                case 'home':
+                    window.location.href = 'index.html';
+                    break;
+                case 'about':
+                    window.location.href = 'about_new.html';
+                    break;
+                case 'services':
+                    window.location.href = 'services.html';
+                    break;
+                case 'contact':
+                    window.location.href = 'contact.html';
+                    break;
+                default:
+                    openMessageModal(`Halaman "${query}" tidak ditemukan. Silakan coba: Home, About, Services, atau Contact.`);
+                    break;
+            }
+        }
+
+        // Add event listener for 'Enter' key on desktop search input
+        document.addEventListener('DOMContentLoaded', () => {
+            const desktopSearchInput = document.getElementById('desktop-search-input');
+            if (desktopSearchInput) {
+                desktopSearchInput.addEventListener('keypress', function(event) {
+                    if (event.key === 'Enter') {
+                        performSearch('desktop-search-input');
+                    }
+                });
+            }
+
+            const mobileSearchInput = document.getElementById('mobile-search-input');
+            if (mobileSearchInput) {
+                mobileSearchInput.addEventListener('keypress', function(event) {
+                    if (event.key === 'Enter') {
+                        performSearch('mobile-search-input');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

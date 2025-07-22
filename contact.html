@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Leodra Sint</title>
+    <!-- Tailwind CSS CDN for utility-first styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter for consistent typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom CSS for font-family and responsive font sizes using clamp */
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden; /* Prevent horizontal scroll on smaller screens */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #FDFDFD;
+            color: #000000;
+        }
+
+        /* Styles copied from index.html for header consistency */
+        /* Hamburger menu bar animation */
+        .menu-icon.open .bar:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+        .menu-icon.open .bar:nth-child(2) {
+            opacity: 0;
+        }
+        .menu-icon.open .bar:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        /* Mobile navigation overlay */
+        .mobile-nav-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .mobile-nav-overlay.open {
+            transform: translateX(0);
+        }
+
+        .mobile-nav-overlay ul {
+            list-style: none;
+            padding: 0;
+            text-align: center;
+        }
+
+        .mobile-nav-overlay ul li {
+            margin: 12px 0;
+        }
+
+        .mobile-nav-overlay ul li a {
+            color: white;
+            font-size: 1.4rem;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* Styles for search input in header (copied from index.html) */
+        .search-input {
+            width: 120px; /* Adjust width as needed for inline header */
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 0.75rem; /* text-xs */
+            color: #333;
+            transition: width 0.3s ease-in-out;
+            background-color: #f0f0f0; /* Light background for visibility in dark header */
+        }
+
+        .search-input:focus {
+            width: 180px; /* Expand on focus */
+            outline: none;
+            border-color: #000;
+            box-shadow: 0 0 0 1px #000;
+        }
+
+        .search-button {
+            background-color: #333;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .search-button:hover {
+            background-color: #555;
+        }
+
+        /* Message Modal specific styles (copied from index.html) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+            max-width: 90%;
+            width: 450px;
+            position: relative;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .modal-overlay.open .modal-content {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background-color: #000000; /* Black */
+            color: #FFFFFF; /* White */
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: 600; /* Semi-bold */
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+        }
+        .btn-primary:hover {
+            background-color: #336699; /* Corporate blue on hover */
+        }
+
+        /* Responsive font sizes using clamp for main titles */
+        .text-h1-responsive {
+            font-size: clamp(1.6rem, 5vw, 2.2rem);
+            letter-spacing: -0.02em;
+            font-weight: 600;
+        }
+        .text-h2-responsive {
+            font-size: clamp(1rem, 2.8vw, 1.4rem);
+        }
+        .text-h3-responsive {
+            font-size: clamp(0.8rem, 2.5vw, 1.8rem);
+        }
+        .text-h4-responsive {
+            font-size: clamp(0.75rem, 1.6vw, 1rem);
+        }
+        .text-p-responsive {
+            font-size: clamp(0.7rem, 1.4vw, 0.85rem);
+            font-weight: 300;
+        }
+    </style>
+</head>
+<body>
+    <!-- Message Modal -->
+    <div id="messageModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-h3-responsive font-semibold text-gray-800">Pesan</h3>
+                <button onclick="closeMessageModal()" class="text-gray-500 hover:text-gray-700 text-2xl font-bold">&times;</button>
+            </div>
+            <div id="messageModalContent" class="text-p-responsive text-center text-gray-700 space-y-2 mb-6">
+                <!-- Message will be inserted here by JavaScript -->
+            </div>
+            <div class="flex justify-center">
+                <button onclick="closeMessageModal()" class="btn-primary px-8">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Navigation Overlay (Hidden by default) -->
+    <div id="mobile-nav-overlay" class="mobile-nav-overlay md:hidden">
+        <div class="absolute top-4 right-4 cursor-pointer text-white text-xl" onclick="toggleMobileMenu()">
+            &times;
+        </div>
+        <div class="flex items-center mb-4">
+            <input type="text" id="mobile-search-input" placeholder="Cari halaman..." class="search-input mr-2">
+            <button onclick="performSearch('mobile-search-input')" class="search-button">Cari</button>
+        </div>
+        <ul>
+            <li><a href="index.html" class="text-white text-xs font-normal hover:text-gray-300 transition-colors duration-200" onclick="toggleMobileMenu()">Home</a></li>
+            <li><a href="about_new.html" class="text-white text-xs font-normal hover:text-gray-300 transition-colors duration-200" onclick="toggleMobileMenu()">About</a></li>
+            <li><a href="services.html" class="text-white text-xs font-normal hover:text-gray-300 transition-colors duration-200" onclick="toggleMobileMenu()">Services</a></li>
+            <li><a href="contact.html" class="text-white text-xs font-normal hover:text-gray-300 transition-colors duration-200" onclick="toggleMobileMenu()">Contact</a></li>
+        </ul>
+    </div>
+
+    <!-- Header Section -->
+    <header class="bg-black h-14 flex items-center sticky top-0 z-50 rounded-b-sm w-full">
+        <div class="container mx-auto flex justify-between items-center px-3 sm:px-5 lg:px-6 w-full">
+            <div class="text-white text-sm font-light tracking-wide">LEODRA SINT</div>
+            <!-- Hamburger Menu Icon for Mobile -->
+            <div class="md:hidden w-6 h-6 flex flex-col justify-around cursor-pointer p-1 rounded-sm transition-all duration-300 ease-in-out" onclick="toggleMobileMenu()">
+                <div class="bar w-full h-0.5 bg-white rounded-full transition-all duration-300 ease-in-out"></div>
+                <div class="bar w-full h-0.5 bg-white rounded-full transition-all duration-300 ease-in-out"></div>
+                <div class="bar w-full h-0.5 bg-white rounded-full transition-all duration-300 ease-in-out"></div>
+            </div>
+            <!-- Desktop Navigation Links -->
+            <nav class="hidden md:flex items-center space-x-4">
+                <div class="flex items-center space-x-2">
+                    <input type="text" id="desktop-search-input" placeholder="Cari halaman..." class="search-input">
+                    <button onclick="performSearch('desktop-search-input')" class="search-button">Cari</button>
+                </div>
+                <ul class="flex space-x-4">
+                    <li><a href="index.html" class="text-white text-xs font-normal hover:text-gray-300 transition-colors duration-200">Home</a></li>
+                    <li><a href="about_new.html" class="text-white text-xs font-normal hover:text-gray-300 transition-colors duration-200">About</a></li>
+                    <li><a href="services.html" class="text-white text-xs font-normal hover:text-gray-300 transition-colors duration-200">Services</a></li>
+                    <li><a href="contact.html" class="text-white text-xs font-normal hover:text-gray-300 transition-colors duration-200">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main content for the Contact page -->
+    <main class="flex-grow flex flex-col items-center p-8">
+        <section class="container mx-auto px-3 sm:px-5 lg:px-6 max-w-4xl py-8 md:py-14">
+            <h1 class="text-h1-responsive text-black text-center mb-10">Hubungi Kami</h1>
+            <p class="text-p-responsive text-gray-700 max-w-2xl text-center mb-8">
+                Jangan ragu untuk menghubungi kami jika Anda memiliki pertanyaan, umpan balik, atau ingin berdiskusi lebih lanjut tentang layanan kami. Kami siap membantu Anda!
+            </p>
+
+            <!-- Section for Key Input -->
+            <div class="w-full max-w-md bg-white p-6 md:p-8 rounded-lg shadow-lg text-center mx-auto">
+                <h3 class="text-h3-responsive text-black font-semibold mb-6">Masukkan Kunci Anda</h3>
+                <div class="flex flex-col items-center space-y-4">
+                    <input type="number" id="api-key-input" placeholder="Masukkan 6 digit kunci di sini..."
+                           class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-black focus:border-black text-p-responsive"
+                           minlength="6" maxlength="6" pattern="\d{6}" oninput="this.value=this.value.slice(0,this.maxLength)" required>
+                    <button onclick="submitKey()" class="btn-primary px-8 py-3">Kirim Kunci</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+   
+    <script>
+        // JavaScript for mobile menu toggle
+        function toggleMobileMenu() {
+            const mobileNavOverlay = document.getElementById('mobile-nav-overlay');
+            mobileNavOverlay.classList.toggle('open');
+            // Optional: Add/remove overflow-hidden to body to prevent scrolling when menu is open
+            document.body.classList.toggle('overflow-hidden');
+        }
+
+        // Function to open the custom message modal
+        function openMessageModal(message) {
+            const messageModal = document.getElementById('messageModal');
+            const messageModalContent = document.getElementById('messageModalContent');
+            messageModalContent.innerHTML = `<p>${message}</p>`;
+            messageModal.classList.add('open');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        // Function to close the custom message modal
+        function closeMessageModal() {
+            const messageModal = document.getElementById('messageModal');
+            messageModal.classList.remove('open');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        // Function to handle search navigation
+        function performSearch(inputId) {
+            const searchInput = document.getElementById(inputId);
+            const query = searchInput.value.trim().toLowerCase();
+
+            switch (query) {
+                case 'home':
+                    window.location.href = 'index.html';
+                    break;
+                case 'about':
+                    window.location.href = 'about_new.html';
+                    break;
+                case 'services':
+                    window.location.href = 'services.html';
+                    break;
+                case 'contact':
+                    window.location.href = 'contact.html';
+                    break;
+                default:
+                    openMessageModal(`Halaman "${query}" tidak ditemukan. Silakan coba: Home, About, Services, atau Contact.`);
+                    break;
+            }
+        }
+
+        // Function to handle key submission
+        function submitKey() {
+            const apiKeyInput = document.getElementById('api-key-input');
+            const apiKey = apiKeyInput.value.trim();
+            const correctKey = "160110"; // The correct 6-digit key
+
+            // Validate that the key is exactly 6 digits
+            const keyPattern = /^\d{6}$/;
+            if (apiKey && keyPattern.test(apiKey)) {
+                if (apiKey === correctKey) {
+                    openMessageModal('Kunci benar! Mengarahkan ke halaman beranda...');
+                    setTimeout(() => {
+                        window.location.href = 'beranda.html'; // Redirect to beranda.html
+                    }, 1500); // Redirect after 1.5 seconds
+                } else {
+                    openMessageModal('Kunci salah. Mohon coba lagi.');
+                }
+                apiKeyInput.value = ''; // Clear the input field
+            } else {
+                openMessageModal('Mohon masukkan kunci yang valid (tepat 6 digit angka).');
+            }
+        }
+
+        // Add event listener for 'Enter' key on desktop search input
+        document.addEventListener('DOMContentLoaded', () => {
+            const desktopSearchInput = document.getElementById('desktop-search-input');
+            if (desktopSearchInput) {
+                desktopSearchInput.addEventListener('keypress', function(event) {
+                    if (event.key === 'Enter') {
+                        performSearch('desktop-search-input');
+                    }
+                });
+            }
+
+            const mobileSearchInput = document.getElementById('mobile-search-input');
+            if (mobileSearchInput) {
+                mobileSearchInput.addEventListener('keypress', function(event) {
+                    if (event.key === 'Enter') {
+                        performSearch('mobile-search-input');
+                    }
+                });
+            }
+
+            // Add event listener for 'Enter' key on the API key input
+            const apiKeyInput = document.getElementById('api-key-input');
+            if (apiKeyInput) {
+                apiKeyInput.addEventListener('keypress', function(event) {
+                    if (event.key === 'Enter') {
+                        submitKey();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
